@@ -59,8 +59,8 @@ class ExtensionHelper
             $upgrade = $invoice->upgrade;
             $product = $upgrade->product;
             $orderProduct = $upgrade->orderProduct;
-            $orderProduct->product_id = $product->id;
             $orderProduct->price -= $orderProduct->product->price($orderProduct->billing_cycle);
+            $orderProduct->product_id = $product->id;
             $orderProduct->price += $product->price($orderProduct->billing_cycle);
             $orderProduct->save();
 
@@ -71,7 +71,7 @@ class ExtensionHelper
 
         foreach ($invoice->items()->get() as $item) {
             $product = $item->product()->get()->first();
-            if (!$product) {
+            if (!$product || str_contains($item->description, 'Setup Fee')) {
                 continue;
             }
 
